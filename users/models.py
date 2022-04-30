@@ -1,5 +1,6 @@
 from django.db import models
-from django.contrib.auth.models import User
+from UserDjango.models import User
+from FindInvest import settings
 import os
 
 
@@ -21,7 +22,7 @@ class Utilisateur(models.Model):
     ville = models.CharField(max_length=200, null=True)
     photo_profile = models.ImageField('Profile', upload_to=load_image ,blank=True)
     tel = models.IntegerField('telephone')
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
 
     type_user = models.CharField('type user', max_length=20, choices=Type_User, null=True, default='Etudiant')
 
@@ -117,4 +118,3 @@ class Investisseur(Utilisateur):
     # l'investisseur marque un projet investir
     def investProject():
         pass
-
