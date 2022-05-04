@@ -37,8 +37,6 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    
-    'UserDjango',
     'posts',
     'users',
 ]
@@ -80,7 +78,7 @@ WSGI_APPLICATION = 'FindInvest.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'NAME': BASE_DIR / 'mydb.sqlite3',
     }
 }
 
@@ -128,4 +126,4 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 #specification du model Utlisateur
 
-AUTH_USER_MODEL = 'UserDjango.User'
+AUTH_USER_MODEL = 'users.Utilisateur'
