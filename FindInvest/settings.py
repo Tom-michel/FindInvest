@@ -10,8 +10,10 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.0/ref/settings/
 """
 
+from curses.ascii import EM
 from pathlib import Path
 import os
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -27,8 +29,17 @@ SECRET_KEY = 'django-insecure-qahm2&a61th2o7-$8qeyujjx!nrw)8t^sm$zy)pmi^clkt^fi_
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+# EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
+# EMAIL_FILE_PATH = BASE_DIR / 'emails'
+EMAIL_USE_TLS = True
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_HOST_USER = 'btmicheldada@gmail.com'
+EMAIL_HOST_PASSWORD = 'skqcluutwjkazjyd'
+EMAIL_PORT = 587
 
 # Application definition
 
@@ -39,8 +50,19 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    
+    #  module de l'application
     'users',
     'posts',
+
+    # module pour l'authentification par reseaux sociaux
+    'django.contrib.sites',
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    'allauth.socialaccount.providers.github',
+    'allauth.socialaccount.providers.google',
+    # 'allauth.socialaccount.providers.facebook',
 ]
 
 MIDDLEWARE = [
@@ -52,6 +74,25 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
+AUTHENTICATION_BACKENDS = (
+    "django.contrib.auth.backends.ModelBackend",
+    "allauth.account.auth_backends.AuthenticationBackend",
+)
+
+SITE_ID = 1
+SOCIALACCOUNT_EMAIL_VERIFICATION = "none"
+SOCIALACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_USERNAME_REQUIRED = False
+SOCIALACCOUNT_QUERY_EMAIL = True
+# ACCOUNT_USER_MODEL_EMAIL_FIELD = 'email'
+
+
+
+ACCOUNT_EMAIL_VERIFICATION = 'none'
+
+LOGIN_REDIRECT_URL = 'signup'
+
 
 ROOT_URLCONF = 'FindInvest.urls'
 
@@ -125,7 +166,37 @@ STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+SOCIALACCOUNT_PROVIDERS = {
+    'google': {
+        'SCOPE': [
+            'profile',
+            'email',
+        ],
+        'AUTH_PARAMS': {
+            'access_type': 'offline',
+        }
+    },
+     'github': {
+        'SCOPE': [
+            'user',
+            'repo',
+            'read:org',
+        ],
+     }
+}
+
+SOCIALACCOUNT_LOGIN_ON_GET = True
+
+
+# GOOGLE_ID = 843288250354-avoukuuc1sqopv0u1vk2nrsmka4fbom6.apps.googleusercontent.com
+
+# GOOGLE_SECRET_KEY = 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
+
+# GITHUB_ID = 118dd9bbf6afad82ec42
+# GITHUB_SECRET_KEY = e406e12c70dfe8c398819a2aef649da5f352cf5d
