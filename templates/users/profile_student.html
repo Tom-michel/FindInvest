@@ -1,148 +1,252 @@
-{% extends 'base.html' %}
+{% extends 'base-accueil.html' %}
 {% load static %}
 
-{% block title %} FindInvest | Profil Etudiant {% endblock %}
+{% block title %} FindIvest | Liste des projets {% endblock %}
 
 {% block content %}
-  
-<style>
 
-    .contain{
-        display: flex;
-        flex-wrap: wrap;
-        align-items: center;
-        justify-content: center;
-        height: 100vh;
-        position: relative;
-    }
-    .profil{
-        display: flex;
-        flex-wrap: wrap;
-        align-items: center;
-        justify-content: center;
-        position: relative;
-        background: #fff;
-        border-radius: 20px;
-        box-shadow: 0 10px 25px 5px rgba(0, 0, 0, 0.459);
-    }
 
-    @media screen and (min-width: 992px) {
+<!-- ============== NAV ================= -->
+<nav>
+  <div class="container">
+      <a href="#create-post">
+          <h2 class="log">
+              <span style="opacity: 0; visibility: hidden;">FindInvest</span>
+              <img src="{% static 'img/logo1.png' %}">
+          </h2>
+      </a>
+      
+      <div class="search-bar" id="search-bar-id">
+          <!-- <i class="fa-solid fa-magnifying-glass"></i> -->
+          <i class="uil uil-search"></i>
+          <input class="search-bar-input" type="search" name="" id="search-bar-input" placeholder="Rechercher...">
+      </div>
+
+      <div class="create dropdown">
+          {% if request.user.etudiant.id %}
+              <div class="profile-photo" style="cursor: pointer;" data-bs-toggle="dropdown" aria-expanded="false">
+                  <img src="{{request.user.etudiant.photoProfil.url}}">
+              </div>
+          {% else %}
+              <div class="profile-photo" style="cursor: pointer;" data-bs-toggle="dropdown" aria-expanded="false">
+                  <img src="{{request.user.investisseur.photoProfil.url}}">
+              </div>
+          {% endif %}
+          <ul class="dropdown-menu">
+              <li>
+                {% if request.user.etudiant.id %}
+                    <a class="dropdown-item" href="{% url 'profile_student' request.user.etudiant.id %}">
+                {% else %}
+                    <a class="dropdown-item" href="{% url 'profile_investor' request.user.investisseur.id %}">
+                {% endif %}
+                  <i class="uil uil-user"></i> Profil</a>
+              </li>
+              <li><a class="dropdown-item" href="{% url 'user_logout' %}">
+                  <i class="uil uil-sign-out-alt"></i> Logout
+              </a></li>
+          </ul>
+      </div>
+  </div>
+</nav>
+
+<!-- ============== MAIN ================= -->
+<main>
+  <div class="container">
+      <!-- ============== LEFT =============== -->
+      <div class="left">
+          <a class="profile">
+            {% if usr.etudiant.id %}
+                <div class="profile-photo" style="cursor: pointer;">
+                    <img src="{{usr.etudiant.photoProfil.url}}">
+                </div>
+            {% else %}
+                <div class="profile-photo" style="cursor: pointer;">
+                    <img src="{{usr.investisseur.photoProfil.url}}">
+                </div>
+            {% endif %}
+              <div class="handle">
+                  <h4>{{usr.last_name}}</h4>
+              </div>
+          </a>
+
+          <!-- ---------- sidebar ---------- -->
+          <div class="sidebar">
+                <a href="{% url 'accueil' %}" class="menu-item">
+                    <span><i class="uil uil-home"></i></span><h3>Accueil</h3>
+                </a>
+                <a href="{% url 'favoris' usr.id %}" class="menu-item">
+                    <span><i class="uil uil-folder-heart"></i></span><h3>Favoris</h3>
+                </a>
+           
+                {% if usr.etudiant.id %}
+                    <a class="menu-item active" href="{% url 'profile_student' usr.etudiant.id %}">
+                {% else %}
+                    <a class="menu-item active" href="{% url 'profile_investor' usr.investisseur.id %}">
+                {% endif %}
+                    <span><i class="uil uil-user"></i></span><h3>Profil</h3>
+                </a> 
+                {% if usr.etudiant.id %}
+                <a href="{% url 'mes_projets' usr.etudiant.id %}" class="menu-item">
+                    <span><i class="uil uil-folder"></i></span><h3>Projets</h3>
+                </a>
+                {% endif %}
+              <a class="menu-item" id="theme">
+                  <span><i class="uil uil-palette"></i></span><h3>Thème</h3>
+              </a>
+          </div>
+
+          <!-- ------------ end of sidebar --------- -->
+      </div>
+      <!-- ============== END OF LEFT =============== -->
+
+
+      <!-- ============== MIDDLE =============== -->
+
+      <!-- =======DEBUT DU STYLE DU MIDDLE ========-->
+      <style>
+        .head{
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+            top: -3rem;
+            /* z-index: 12; */
+            margin-right: 2rem;
+        }
+        .head .pp{
+            width: 10rem;
+
+        }
+
+        .profile_pp{
+            position: relative;
+            width: 10rem;
+            height: 10rem;
+            border-radius: 50%;
+            overflow: hidden;
+            /* margin: auto; */
+            /* border: #0b5ed7 dashed 0.5px; */
+            border: #fff solid 3px;
+            /* box-shadow: #fff 0 0 1rem; */
+            z-index: 12;
+        }
+        .profile_pp img{
+            width: 100%;
+        }
+
+        .contacts{
+            display: flex;
+            justify-content: space-between;
+            padding: 0 2rem;
+            font-weight: 600;
+        }
         
-        .barre{
-            position: relative;
-            left: 0;
-            width: 300px;
-            position: relative;
-            height: 500px;
-            background: #ff8c2e;
-            border-top-left-radius: 15px;
-            border-bottom-left-radius: 15px;
-        }
-        .image{
-            position: relative;
-            left: -150px;
-        }
-        .image img{
-            width: 300px;
-            height: 300px;
-        }
-        .desc{
-            position: relative;
-            width: 300px;
-            left: -100px;
-        }
-    }
+      </style>
 
-    @media screen and (min-width: 768px) and (max-width: 991px) {
-        .profil{
-            margin: 0 100px;
-        }
-        .barre{
-            position: relative;
-            top: 0;
-            width: 100%;
-            position: relative;
-            height: 200px;
-            background: #ff8c2e;
-            border-top-left-radius: 15px;
-            border-top-right-radius: 15px;
-        }
-        .image{
-            position: relative;
-            top: -150px;
-        }
-        .image img{
-            width: 300px;
-            height: 300px;
-        }
-        .desc{
-            position: relative;
-            width: 500px;
-            margin: 0 50px;
-            top: -100px;
-        }
-        .contain{
-            margin-top: 50px;
-            margin-bottom: 50px;
-        }
-    }
-
-    @media screen and (max-width: 767px) {
-        .profil{
-            position: relative;
-            margin: 0 10px;
-        }
-        .barre{
-            position: relative;
-            width: 100%;
-            position: relative;
-            height: 200px;
-            background: #ff8c2e;
-            border-top-left-radius: 15px;
-            border-top-right-radius: 15px;
-        }
-        .image{
-            position: relative;
-            top: -100px;
-        }
-        .image img{
-            width: 300px;
-            height: 250px;
-        }
-        .desc{
-            position: relative;
-            margin: 0 15px;
-            top: -50px;
-        }
-    }
-
-    .image img{
-        border-radius: 20px;
-        /* box-shadow: 0 10px 25px 5px rgba(0, 0, 0, 0.459); */
-    }
-
-    body{
-        background: #ff8c2e !important;
-    }
-
-</style>
-
-<div class="contain">
-    <div class="profil">
-        <div class="barre">
-            <!-- Lorem ipsum dolor sit amet consectetur adipisicing elit. Quasi ratione doloribus vel similique enim perferendis, itaque magnam hic aperiam, quis molestias labore ea. Nisi at quaerat, sed exercitationem eos dolore. -->
+      <div class="middle">          
+        
+        <div class="create-post infos text-center" style="display: block !important; font-weight: 600; padding-bottom: 6rem;">
+            Bienvenue
         </div>
-        <div class="image">
-            <img src="{{ etudiant.photoProfil.url }}" alt="">
+        <div class="profile-info mb-4">
+            
+
+            <div class="head">
+                <div class="profile_pp">
+                    <img src="{{usr.etudiant.photoProfil.url}}" alt="">
+                </div>
+                {% if usr.id == request.user.id %}
+                <span>
+                    <a href="{% url 'update_profile_student' %}" class="btn btn-primary">Modifier profil</a>
+                </span>
+                {% endif %}
+            </div>
+
+            <div class="infos">
+                <h4 class="mb-0">{{usr.last_name}}</h4>
+                <p class="mb-4">@{{usr.username}}</p>
+                <h6 class="mb-1">Bio :</h6>
+                <p>
+                    {{usr.etudiant.bio}}
+                </p>
+                <p></p>
+                <div class="contacts mb-2">
+                    <span>
+                        <i class="uil uil-map-marker-alt"></i> {{usr.etudiant.ville}}
+                    </span>
+                    <span>
+                        <i class="uil uil-mobile-android"></i> {{usr.etudiant.telephone}}
+                    </span>
+                </div>
+                <div class="contacts">
+                    <span>
+                        <i class="uil uil-graduation-cap"></i> {{usr.etudiant.universite}}
+                    </span>
+                    <span>
+                        <i class="uil uil-chart-line"></i> {{usr.etudiant.niveauEtude}}
+                    </span>
+                </div>
+            </div>
         </div>
-        <div class="desc">
-            <h1>Description</h1>
-            <p>
-                Lorem, ipsum dolor sit amet consectetur adipisicing elit. Explicabo incidunt aperiam nam est dolorem dolor error. Accusantium perferendis quod neque aperiam blanditiis laudantium, accusamus sed, ad quo, quaerat optio. Porro.
-                Lorem ipsum dolor sit amet consectetur adipisicing elit. Enim molestiae ullam necessitatibus explicabo officiis minima possimus eum incidunt fugiat fuga magni eos, consectetur ratione consequatur eius distinctio non eveniet sequi.
-            </p>
+
+        
+      </div>
+      <!-- ============== END OF MIDDEL =============== -->
+
+      <!-- ============== RIGHT =============== -->
+
+    {% comment %} <div class="right">
+        <!-- -------- catégories ---------- -->
+        <div class="categories">
+            <div class="heading">
+               <h4>Tous les projets</h4>
+               <i class="uil uil-0-plus"></i>
+            </div>
+
+            <!-- ---------- search bar ------------- -->
+            <div class="search-bar">
+                <i class="uil uil-search"></i>
+                <input type="search" name="" id="category-search" placeholder="Rechercher...">
+            </div>
+            <!-- -------- project categrories --------- -->
+            <div class="category">
+               <h6 class="active">Types</h6>
+               <h6>Plus Aimés</h6>
+               <h6 class="invest-projects">Investis(6)</h6>
+            </div>
+
+            <div class="accordion accordion-flush" id="cat1">
+                {% for post in postListUnique %}
+                    <div class="accordion-item mb-4" id="accordion-cat" style="border: none;">
+                        <div class="project-line" style="cursor: pointer;">
+                            <div class="project-body collapsed" data-bs-toggle="collapse" data-bs-target="#cat{{post.categorie.id}}" aria-expanded="false">
+                                <h5>{{post.categorie}}</h5>
+                                <p class="text-muted">nombre projets publiés</p>
+                            </div>
+                            <span class="">
+                                <i class="uil uil-direction"></i>
+                            </span>
+                        </div>
+                        
+                        {% for p in postList %}
+                            {% if p.categorie == post.categorie %}
+                                <div id="cat{{post.categorie.id}}" class="accordion-collapse collapse my-2" aria-labelledby="flush-head{{post.categorie.id}}" data-bs-parent="#cat2">
+                                    <!-- <p></p> -->
+                                    <a href="{% url 'accueil' %}#projet{{p.id}}">{{p.title}}</a>
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                {% endfor %}
+            </div>
+            
         </div>
-    </div>
-</div>
+    </div> {% endcomment %}
+
+      <!-- ============== END OF RIGTH =============== -->
+  </div>
+</main>
 
 {% endblock %}
+

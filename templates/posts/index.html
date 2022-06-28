@@ -401,7 +401,11 @@
             </ul>
             <div class="linkBtn me-5 my-2">   
                 <a href="/#inscription" class="mx-1 text-dark text-decoration-none border border-primary border-2 bg-light  py-1 px-4 rounded-pill shadow bout">S'inscrire</a>
-                <a href="{% url 'connexion' %}" class="ms-1 mt-3 text-dark text-decoration-none border border-warning border-2 bg-light py-1 px-3 rounded-pill shadow bout">Se connecter</a>
+				{% if user.is_authenticated %}
+				    <a href="{% url 'user_logout' %}" class="ms-1 mt-3 text-dark text-decoration-none border border-warning border-2 bg-light py-1 px-3 rounded-pill shadow bout">Se déconnecter</a>
+				{% else %}
+                	<a href="{% url 'connexion' %}" class="ms-1 mt-3 text-dark text-decoration-none border border-warning border-2 bg-light py-1 px-3 rounded-pill shadow bout">Se connecter</a>
+				{% endif %}
             </div>
         </div>
     </div><!-- /.container -->

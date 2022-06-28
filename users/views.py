@@ -8,6 +8,7 @@ from django.contrib import messages
 from .forms import UserForm, EtuForm, InvestForm, UserUpadateForm, PwdUpdateForm
 from .models import Etudiant, Investisseur
 from django.contrib.auth.models import User
+from posts.models import Projet
 
 # Create your views here.
 
@@ -341,16 +342,28 @@ def update_profile_investor(request):
 # Consulter profil etudiant
 
 def profile_student(request, id_e):
+    postList = Projet.objects.all()
+    postListUnique = []
+    pListCat = []
+    for p in postList:
+        if p.categorie not in pListCat:
+            postListUnique.append(p)
+            pListCat.append(p.categorie)
+
 
     # identifier l'etudiant
     etudiant = Etudiant.objects.get(id=id_e)
 
     # identifier le user
     util = User.objects.get(id=etudiant.user.id)
-    
+    usr = util
     context = {
         'etudiant':etudiant,
         'util':util,
+
+        'postList':postList,
+        'postListUnique':postListUnique,
+        'usr':usr,
     }
     return render(request, 'users/profile_student.html', context)
 
@@ -362,11 +375,25 @@ def profile_student(request, id_e):
 
 @login_required(login_url='connexion')
 def profile_investor(request,id_i):
+    postList = Projet.objects.all()
+    postListUnique = []
+    pListCat = []
+    for p in postList:
+        if p.categorie not in pListCat:
+            postListUnique.append(p)
+            pListCat.append(p.categorie)
+    
+
     investor=Investisseur.objects.get(id=id_i)
     util=User.objects.get(id=investor.user.id)
+    usr = util
     context={
         'util':util,
         'investor':investor,
+
+        'postList':postList,
+        'postListUnique':postListUnique,
+        'usr':usr,
     }
     return render(request, 'users/profile_investor.html',context)
 

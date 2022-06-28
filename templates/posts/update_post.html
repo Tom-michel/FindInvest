@@ -1,0 +1,160 @@
+{% extends 'base-accueil.html' %}
+{% load static %}
+
+{% block title %} FindInvest | Modifier un projet {% endblock %}
+
+{% block content %}
+
+<style>
+	#modifyPostModal{
+		background: rgba(0, 0, 0, 0.5) !important;
+	}
+</style>
+
+<div class="modal fade show" id="modifyPostModal" tabindex="-1" aria-labelledby="modifyPostLabel" style="display: block; padding-left: 0px;" aria-modal="true" role="dialog">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="modifyPostLabel">Publier/Modifier un projet</h5>
+          <i id="fermerMod" class="uil uil-multiply" data-bs-dismiss="modal" aria-label="Close" onclick="history.back()"></i>
+        </div>
+        <div class="modal-body">
+            <style>
+                textarea{
+                    width: 100%;
+                    height: 100px;
+                }
+            </style>
+            
+			{% comment %} <form id="create_form" method="post" enctype="multipart/form-data">
+				{{projet_form}}
+
+				<input type="text" id="form_type" name="form_type" value="create_form" hidden=""><p></p>
+                <center><input class="mt-4 btn btn-primary" type="submit" value="Publier"></center>
+			</form> {% endcomment %}
+
+            <form id="create_form" method="post" enctype="multipart/form-data">
+                <input type="hidden" name="csrfmiddlewaretoken" value="eHq97Vw4aREHzz2HyvRBI2l0yBMlVPto3imbgD5X5eXoyLm6w79vo2YTowwg1IN1"> 
+                    
+                    
+                    {% comment %} <input type="text" name="title" maxlength="200" required="" id="id_title" placeholder="Titre du Projet"><p></p> {% endcomment %}
+                    {{projet_form.title}} <p></p>
+
+                    <p style="display: flex; align-items: center; gap: 1rem;">
+                        <label for="id_categorie">Catégorie</label>
+                        {% comment %} <select name="categorie" id="id_categorie">
+							<option value="INFORMATIQUE">INFORMATIQUE</option>
+
+							<option value="AGRICULTURE">AGRICULTURE</option>
+
+							<option value="ELEVAGE">ELEVAGE</option>
+
+							<option value="SANTE">SANTE</option>
+
+							<option value="AUTRES">AUTRES</option>
+
+						</select> {% endcomment %}
+						{{projet_form.categorie}}
+                    </p><p></p>
+
+                    {% comment %} <select name="investi" id="id_investi" hidden="">
+                        <option value="">---------</option>
+
+                        <option value="Oui">Oui</option>
+
+                        <option value="Non" selected="">Non</option>
+
+                    </select> {% endcomment %}
+					<span style="display: none;">
+						{{projet_form.investi}}
+					</span>
+
+                    {% comment %} <textarea name="description" cols="40" rows="10" maxlength="500" required="" id="id_description" placeholder="Description"></textarea><p></p> {% endcomment %}
+					{{projet_form.description}} <p></p>
+
+                    {% comment %} <select name="etudiant" required="" id="id_etudiant" hidden="">
+                        <option value="1">FindInvest_e Profile</option>
+                    </select> {% endcomment %}
+					<span style="display: none;">
+						{{projet_form.etudiant}}
+					</span>
+
+                    <center>
+                        <label id="image_post" for="id_image">
+                            <span>Insérez une image</span>
+                            <i class="uil uil-image-plus"></i>
+                            <img id="upload_image" src="{{projet.image.url}}" alt="">
+                        </label>
+                    </center>
+                    <input type="file" name="image" accept="image/*" id="id_image" hidden=""><p></p>
+					<span>
+						{% comment %} {{projet_form.image}} {% endcomment %}
+					</span>
+                    <hr>
+                    <center>
+                        <p class="mt-2 mb-0 text-small">Ajoutez un fichier qui décrire de manière plus détaillée votre projet</p>
+                        <label id="media_post" for="id_media">
+                            <i class="uil uil-file-plus"></i>
+                            <span class="text-muted text-small" id="upload_file">{{projet.media}}</span>
+                        </label>
+                    </center>
+                    <input type="file" name="media" id="id_media" hidden=""><p></p>
+
+
+                    <input type="text" id="form_type" name="form_type" value="create_form" hidden=""><p></p>
+                    <center><input class="mt-4 btn btn-primary" type="submit" value="Publier"></center>
+                    
+            </form>
+        </div>
+      </div>
+    </div>
+</div>
+
+
+<!-- charger les ficheirs du formulaire de création d'un post -->
+<script>
+    // charger l'image
+
+	let choosenImage = document.getElementById('upload_image');
+	let uploardButton = document.getElementById('image_post');
+    let postImage = document.getElementById('id_image');
+
+	let ListExt = ["jpeg", "jpg", "png", "tif", "gif",
+				   "JPEG", "JPG", "PNG", "TIF", "GIF"];
+	postImage.onchange = () =>{
+		let fileName = postImage.files[0].name.split(".");
+		let ext = fileName[fileName.length-1];
+		if(ListExt.indexOf(ext) === -1){
+			alert("Veuillez sélectionner une image png, jpeg, jpg, tif ou gif");
+		}else{
+			let reader = new FileReader();
+			reader.readAsDataURL(postImage.files[0]);
+			let file = postImage.files[0];
+			reader.onload = () => {
+				choosenImage.setAttribute("src", reader.result);
+
+			}
+		}
+	}
+
+    // charger le nom de ficher
+
+    nomFile = document.getElementById('upload_file');
+    postFile = document.getElementById('id_media');
+
+    postFile.onchange = () =>{
+		let fileName = postFile.files[0].name;
+		nomFile.innerHTML = fileName;
+	}
+</script>
+
+
+
+
+<!-- ---------- copie de la page d'accueil --------------- -->
+
+{% include "posts/accueil.html" %}
+
+
+
+{% endblock %}

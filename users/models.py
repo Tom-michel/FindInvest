@@ -9,21 +9,6 @@ import os
 
 # creation la classe Utilisateur
 
-def renommer_image(instance, filename):
-    upload_to = 'images/'
-    ext = filename.split('.')[-1]
-    listExt = ['png', 'jpg', 'tif', 'bmp', 'jpeg', 'gif']
-    if instance.user.username:
-        noms = instance.user.last_name.split(' ')
-        idUser = instance.user.id
-        n = ""
-        nom_image = ""
-        for nom in noms:
-            n += ("_"+nom)
-        nom_image = (str(idUser)+n)
-        filename = "photos_profile/{}.{}".format(nom_image, "png")
-        return os.path.join(upload_to, filename)
-
 class Utilisateur(models.Model):
 
     ville = models.CharField(max_length=100, null=True)
@@ -40,19 +25,6 @@ class Utilisateur(models.Model):
 
 # creation de la Classe Etudiant
 
-def renommer_fichier(instance, filename):
-    upload_to = 'documents/'
-    if instance.user.username:
-        noms = instance.user.last_name.split(' ')
-        idUser = instance.user.id
-        n = ""
-        nom_fichier = ""
-        for nom in noms:
-            n += ("_"+nom)
-        nom_fichier = (str(idUser)+n)
-        filename = "fiches_inscription/{}.{}".format(nom_fichier, "png")
-        return os.path.join(upload_to, filename)
-
 class Etudiant(Utilisateur):
     # User possede déja : username, email, first_name, last_name, (password 1 et 2)
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='etudiant')
@@ -67,8 +39,8 @@ class Etudiant(Utilisateur):
     ]
     niveauEtude = models.CharField(choices=NIVEAUX, default='BAC + 1', max_length=100)
     universite = models.CharField(max_length=100)
-    fiche_inscription = models.FileField(upload_to=renommer_fichier, blank=True)
-    bio = models.TextField(max_length=300, null=True, blank=True)
+    fiche_inscription = models.FileField(upload_to='documents/fiches_inscription', blank=True)
+    bio = models.TextField(max_length=300, null=True, blank=True, default="Je suis un étudiant de l'UNIVERSITÉ DE YAOUNDÉ 1. Je suis assez ambitieux et jai des projets que je souhaiterais mettre sur le marché.")
     def __str__(self):
         return f'{self.user.username} Profile'
 
@@ -82,6 +54,6 @@ class Investisseur(Utilisateur):
 
     profession = models.CharField(max_length=100)
     objectifs = models.CharField(max_length=300)
-    entreprise = models.CharField(max_length=100, blank=True)
+    entreprise = models.CharField(max_length=100, blank=True, default='Non renseigné')
     def __str__(self):
         return f'{self.user.username} Profile'

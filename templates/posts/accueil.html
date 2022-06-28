@@ -9,23 +9,46 @@
 <!-- ============== NAV ================= -->
 <nav>
     <div class="container">
-        <!-- <h2 class="log">
-            FindInvest
-        </h2> -->
-        <h2 class="log">
-            <span style="opacity: 0; visibility: hidden;">FindInvest</span>
-            <img src="./images/logo1.png" alt="">
-        </h2>
-        <div class="search-bar">
+        <a href="#create-post">
+            <!-- <h2 class="log">
+                FindInvest
+            </h2> -->
+            <h2 class="log">
+                <span style="opacity: 0; visibility: hidden;">FindInvest</span>
+                <img src="{% static 'img/logo1.png' %}">
+            </h2>
+        </a>
+        
+        <div class="search-bar" id="search-bar-id">
             <!-- <i class="fa-solid fa-magnifying-glass"></i> -->
             <i class="uil uil-search"></i>
-            <input type="search" name="" id="" placeholder="Rechercher...">
+            <input class="search-bar-input" type="search" name="" id="search-bar-input" placeholder="Rechercher...">
         </div>
-        <div class="create">
-            <label class="btn btn-primary" for="create-post">Create</label>
-            <div class="profile-photo">
-                <img src="./images/profile-1.jpg" alt="">
-            </div>
+        
+        <div class="create dropdown">
+            {% if request.user.etudiant.id %}
+                <label class="btn btn-primary" for="create-post" data-bs-toggle="modal" data-bs-target="#createPostModal">Poster</label>
+                <div class="profile-photo" style="cursor: pointer;" data-bs-toggle="dropdown" aria-expanded="false">
+                    <img src="{{request.user.etudiant.photoProfil.url}}">
+                </div>
+            {% else %}
+                <div class="profile-photo" style="cursor: pointer;" data-bs-toggle="dropdown" aria-expanded="false">
+                    <img src="{{request.user.investisseur.photoProfil.url}}">
+                </div>
+            {% endif %}
+            <ul class="dropdown-menu">
+                <li>
+                    {% if request.user.etudiant.id %}
+                        <a class="dropdown-item" href="{% url 'profile_student' request.user.etudiant.id %}">
+                    {% else %}
+                        <a class="dropdown-item" href="{% url 'profile_investor' request.user.investisseur.id %}">
+                    {% endif %}
+                    <i class="uil uil-user"></i> Profil</a>
+                </li>
+                <li><a class="dropdown-item" href="{% url 'user_logout' %}">
+                    <i class="uil uil-sign-out-alt"></i> Logout
+                </a></li>
+            </ul>
         </div>
     </div>
 </nav>
@@ -36,21 +59,25 @@
         <!-- ============== LEFT =============== -->
         <div class="left">
             <a class="profile">
-                <div class="profile-photo">
-                    <img src="./images/profile-1.jpg" alt="">
-                </div>
+                {% if request.user.etudiant.id %}
+                    <div class="profile-photo"  style="cursor: pointer;">
+                        <img src="{{request.user.etudiant.photoProfil.url}}">
+                    </div>
+                {% else %}
+                    <div class="profile-photo" style="cursor: pointer;">
+                        <img src="{{request.user.investisseur.photoProfil.url}}">
+                    </div>
+                {% endif %}
                 <div class="handle">
-                    <h4>Tom michel</h4>
-                    <p class="text-muted">@tOm</p>
+                    <h4>{{request.user.last_name}}</h4>
                 </div>
             </a>
 
             <!-- ---------- sidebar ---------- -->
             <div class="sidebar">
-                <!-- <a class="menu-item active">
-                    <span><i class="uil uil-home"></i></span><h3>Home</h3>
-                </a> -->
-                <a class="menu-item" id="messages-notifications">
+
+                <!-- lance le modal des discussions -->
+                <a class="menu-item" id="messages-notifications"  data-bs-toggle="modal" data-bs-target="#discussionModal">
                     <span><i class="uil uil-envelope"><small class="notifications-count">6</small></i></span><h3>Messages</h3>
                 </a>
                 <a class="menu-item" id="notifications">
@@ -59,7 +86,7 @@
                     <div class="notifications-popup">
                         <div>
                             <div class="profile-photo">
-                                <img src="./images/tm.jpg" alt="">
+                                <img src="{% static 'img/default.jpeg' %}">
                             </div>
                             <div class="notifications-body">
                                 <b>Flavie Daniella</b> commened on your post
@@ -68,7 +95,7 @@
                         </div>
                         <div>
                             <div class="profile-photo">
-                                <img src="./images/profile-3.jpg" alt="">
+                                <img src="{% static 'img/default.jpeg' %}">
                             </div>
                             <div class="notifications-body">
                                 <b>Mengue Victor</b> liked your post
@@ -77,7 +104,7 @@
                         </div>
                         <div>
                             <div class="profile-photo">
-                                <img src="./images/profile-4.jpg" alt="">
+                                <img src="{% static 'img/default.jpeg' %}">
                             </div>
                             <div class="notifications-body">
                                 <b>Nguete Dave</b> commened on your post
@@ -86,7 +113,7 @@
                         </div>
                         <div>
                             <div class="profile-photo">
-                                <img src="./images/profile-5.jpg" alt="">
+                                <img src="{% static 'img/default.jpeg' %}">
                             </div>
                             <div class="notifications-body">
                                 <b>Bikim Yvelos</b> liked your post
@@ -95,7 +122,7 @@
                         </div>
                         <div>
                             <div class="profile-photo">
-                                <img src="./images/profile-6.jpg" alt="">
+                                <img src="{% static 'img/default.jpeg' %}">
                             </div>
                             <div class="notifications-body">
                                 <b>Tom Michel</b> commened on a post you are tagged
@@ -108,7 +135,7 @@
                 <a class="menu-item">
                     <span><i class="uil uil-folder"></i></span><h3>Mes projets</h3>
                 </a>
-                <a class="menu-item">
+                <a href="{% url 'favoris' request.user.id %}" class="menu-item">
                     <span><i class="uil uil-folder-heart"></i></span><h3>Mes favoris</h3>
                 </a>
                 <a class="menu-item">
@@ -117,344 +144,315 @@
                 <a class="menu-item" id="theme">
                     <span><i class="uil uil-palette"></i></span><h3>Thème</h3>
                 </a>
-                <!-- <a class="menu-item">
-                    <span><i class="uil uil-setting"></i></span><h3>Paramètres</h3>
-                </a> -->
             </div>
 
             <!-- ------------ end of sidebar --------- -->
-            <label class="btn btn-primary" for="create-post">Create post</label>
+            {% if request.user.etudiant.id %}
+            <label class="btn btn-primary" for="create-post" data-bs-toggle="modal" data-bs-target="#createPostModal">Create post</label>
+            {% endif %}
         </div>
         <!-- ============== END OF LEFT =============== -->
 
 
         <!-- ============== MIDDLE =============== -->
         <div class="middle">
-            <!-- ---------- stories --------------- -->
-            <!-- <div class="stories">
-                <div class="story">
-                    <div class="profile-photo">
-                        <img src="{% static 'images/profile-1.jpg' %}" alt="">
+            <!-- --------- début recherche ------------ -->
+        
+            <div class="searchNav" id="searchNavId">
+                <div class="result">
+                    <div class="search-bar my-2">
+                        <input class="search-bar-input" type="search" name="" id="search-bar-input-2" placeholder="Rechercher...">
                     </div>
-                    <p class="name">Flavie Daniella</p>
+                    {% for post in postList %}
+                        <div class="to-search-project">
+                            <a href="#projet{{post.id}}">
+                                <div class="profile-photo">
+                                    <img src="{{post.etudiant.photoProfil.url}}">
+                                </div>
+                                <span>
+                                    <h3>{{post.etudiant.user.last_name}} - <span>{{post.categorie}}</span></h3>
+                                    <h5>{{post.title}}</h5>
+                                </span>
+                            </a>
+                        </div>
+                    {% endfor %}
                 </div>
-                <div class="story">
-                    <div class="profile-photo">
-                        <img src="./images/profile-11.jpg" alt="">
-                    </div>
-                    <p class="name">Bikim Yvelos</p>
+            </div>
+
+            <!-- -------------- fin recherche ------------ -->
+
+            {% if request.user.etudiant.id %}
+                <div class="create-post" id="create-post" data-bs-toggle="modal" data-bs-target="#createPostModal">
+                    
+                    {% if request.user.etudiant.id %}
+                        <div class="profile-photo"  style="cursor: pointer;">
+                            <img src="{{request.user.etudiant.photoProfil.url}}">
+                        </div>
+                    {% else %}
+                        <div class="profile-photo" style="cursor: pointer;">
+                            <img src="{{request.user.investisseur.photoProfil.url}}">
+                        </div>
+                    {% endif %}
+                    <input type="search" name="" id="create-post" placeholder="Une idée de projet ?">
+                    <button class="btn btn-primary">Poster</button>
                 </div>
-                <div class="story">
-                    <div class="profile-photo">
-                        <img src="./images/profile-12.jpg" alt="">
-                    </div>
-                    <p class="name">Nguete Dave</p>
-                </div>
-                <div class="story">
-                    <div class="profile-photo">
-                        <img src="./images/profile-13.jpg" alt="">
-                    </div>
-                    <p class="name">Nguete Dave</p>
-                </div>
-                <div class="story">
-                    <div class="profile-photo">
-                        <img src="./images/profile-13.jpg" alt="">
-                    </div>
-                    <p class="name">Nguete Dave</p>
-                </div>
-               <div class="story">
-                    <div class="profile-photo">
-                        <img src="./images/profile-8.jpg" alt="">
-                    </div>
-                    <p class="name">Tom Michel</p>
-                </div>
-                <div class="story">
-                    <div class="profile-photo">
-                        <img src="./images/profile-9.jpg" alt="">
-                    </div>
-                    <p class="name">Mengue Victor</p>
-                </div>
-                <div class="story">
-                    <div class="profile-photo">
-                        <img src="./images/profile-10.jpg" alt="">
-                    </div>
-                    <p class="name">Flavie Daniella</p>
-                </div>
-                <div class="story">
-                    <div class="profile-photo">
-                        <img src="./images/profile-11.jpg" alt="">
-                    </div>
-                    <p class="name">Bikim Yvelos</p>
-                </div>
-                <div class="story">
-                    <div class="profile-photo">
-                        <img src="./images/profile-12.jpg" alt="">
-                    </div>
-                    <p class="name">Nguete Dave</p>
-                </div>
-           
-                <div class="story">
-                    <div class="profile-photo">
-                        <img src="./images/profile-13.jpg" alt="">
-                    </div>
-                    <p class="name">Nguete Dave</p>
-                </div>
-            </div> -->
-            <!-- ---------- end of stories --------------- -->
-            <form class="create-post">
-                <div class="profile-photo">
-                    <img src="./images/profile-1.jpg" alt="">
-                </div>
-                <input type="search" name="" id="create-post" placeholder="Une idée de projet ?">
-                <input type="submit" value="Poster" class="btn btn-primary">
-            </form>
+            {% endif %}
 
             <!-- ------------ posts --------------- -->
             <div class="posts">
-                <!-- ------------ post 1 --------------- -->
-                <div class="post">
-                    <div class="head">
-                        <div class="user">
-                            <div class="profile-photo">
-                                <img src="./images/profile-14.jpg" alt="">
+                {% for post in postList %}
+                    <!-- ------------ post 1 --------------- -->
+                    {% if post.investi == "Oui" %}
+                    <div class="post investi" id="projet{{post.id}}">
+                    {% else %}
+                    <div class="post" id="projet{{post.id}}">
+                    {% endif %}
+                        <div class="head">
+                            <div class="user">
+                                <a href="{% url 'profile_student' post.etudiant.id %}">
+                                    <div class="profile-photo">
+                                        <img src="{{post.etudiant.photoProfil.url}}">
+                                    </div>
+                                </a>
+                                <div class="autor">
+                                    <a href="#projet{{post.id}}">
+                                        <h3>{{post.etudiant.user.last_name}} - {{post.categorie}}</h3>
+                                        <small>{{post.etudiant.ville}}, {{post.date_post}}</small>
+                                    </a>
+                                </div>
                             </div>
-                            <div class="autor">
-                                <h3>Tom Michel - Informatique</h3>
-                                <!-- <h5>Application de gestion des tontines</h5> -->
-                                <small>Yaoundé, 15 MINUTES AGO</small>
+                            
+                            {% if request.user.id == post.etudiant.user.id %}
+                                <div class="dropstart">
+                                    <span class="edit" id="dropdownPostActions" data-bs-toggle="dropdown" aria-expanded="false">
+                                        <i class="uil uil-ellipsis-h"></i> 
+                                    </span>
+                                    <ul class="dropdown-menu" aria-labelledby="dropdownPostActions">
+                                        <li><a class="dropdown-item" href="{% url 'update_post' post.id %}">Modifier</a></li>
+                                        <li><a class="dropdown-item" href="{% url 'delete_post' post.id %}" onclick="return delete_post();">Supprimer</a></li>
+                                    </ul>
+                                </div>
+                            {% endif %}
+                        </div>
+                        <div class="post-description">
+                            <div class="post-title">
+                                <h5>
+                                    {{post.title}}
+                                    {% if post.investi == "Oui" %}
+                                    <span style="color: green;">- projet inivesti</span>
+                                    {% endif %}
+                                </h5>
                             </div>
+                            <p>
+                                {{post.description}}
+                            </p>
+                            {% if post.media %}
+                                <p>
+                                    <a href="{{post.media.url}}" download="FindInvest_Document">Description détaillée PDF</a>
+                                </p>
+                            {% endif %}
                         </div>
-                        <span class="edit">
-                            <i class="uil uil-ellipsis-h"></i> 
-                        </span>
-                    </div>
-
-                    <div class="photo">
-                        <img src="./images/feed-1.jpg" alt="">
-                    </div>
-
-                    <div class="action-buttons">
-                        <div class="interaction-buttons">
-                            <span><i class="uil uil-heart"></i></span>
-                            <span><i class="uil uil-comment-dots"></i></span>
-                            <span><i class="uil uil-share-alt"></i></span>
+                        <div class="photo">
+                            <a href="{{post.image.url}}">
+                                <img src="{{post.image.url}}">
+                            </a>
                         </div>
-                        <div class="favorite">
-                            <span><i class="uil uil-favorite"></i></span>
-                        </div>
-                    </div>
 
-                    <div class="liked-by">
-                        <span><img src="./images/profile-15.jpg" alt=""></span>
-                        <span><img src="./images/profile-16.jpg" alt=""></span>
-                        <span><img src="./images/profile-18.jpg" alt=""></span>
-                        <p>Aimé par <b>Tom Michel</b> et <b>321 autres</b></p>
-                    </div>
-
-                    <div class="caption">
-                        <b>Tom Michel</b> Lorem ipsum dolor sit amet consectetur, adipisicing elit. <span class="hash-tag">#génie</span>
-                    </div>
-
-                    <div class="comments text-muted">
-                        Voir tous les 120 commentaires
-                    </div>
-                </div>
-
-                <!-- ------------ post 2 --------------- -->
-                <div class="post">
-                    <div class="head">
-                        <div class="user">
-                            <div class="profile-photo">
-                                <img src="./images/profile-15.jpg" alt="">
+                        <div class="action-buttons mt-0">
+                            <style>
+                                .bi-star-fill{
+                                    color: orange;
+                                }
+                                .bi-suit-heart-fill{
+                                    color: red;
+                                }
+                            </style>
+                            <div class="interaction-buttons">
+                                <span>
+                                    <!-- <i class="uil uil-heart"></i> -->
+                                    <!-- <i class="bi bi-suit-heart-fill"></i> -->
+                                    <i class="bi bi-suit-heart"></i>
+                                    <!-- <span class="text-muted text-small">15</span> -->
+                                </span>&emsp;
+                                <span>
+                                    <!-- <i class="uil uil-comment-dots icon-toggle-comments"></i> -->
+                                    <i class="bi bi-chat-text icon-toggle-comments"></i>
+                                    <!-- <span class="text-muted text-small">15</span> -->
+                                </span>&emsp;
+                                <span><i class="uil uil-share-alt"></i></span>
                             </div>
-                            <div class="autor">
-                                <h3>Tom Michel - Informatique</h3>
-                                <!-- <h5>Application de gestion des tontines</h5> -->
-                                <small>Yaoundé, 15 MINUTES AGO</small>
+                            <div>
                             </div>
-                        </div>
-                        <span class="edit">
-                            <i class="uil uil-ellipsis-h"></i> 
-                        </span>
-                    </div>
-
-                    <div class="photo">
-                        <img src="./images/feed-2.jpg" alt="">
-                    </div>
-
-                    <div class="action-buttons">
-                        <div class="interaction-buttons">
-                            <span><i class="uil uil-heart"></i></span>
-                            <span><i class="uil uil-comment-dots"></i></span>
-                            <span><i class="uil uil-share-alt"></i></span>
-                        </div>
-                        <div class="favorite">
-                            <span><i class="uil uil-favorite"></i></span>
-                        </div>
-                    </div>
-
-                    <div class="liked-by">
-                        <span><img src="./images/profile-15.jpg" alt=""></span>
-                        <span><img src="./images/profile-16.jpg" alt=""></span>
-                        <span><img src="./images/profile-18.jpg" alt=""></span>
-                        <p>Aimé par <b>Tom Michel</b> et <b>321 autres</b></p>
-                    </div>
-
-                    <div class="caption">
-                        <b>Tom Michel</b> Lorem ipsum dolor sit amet consectetur, adipisicing elit. <span class="hash-tag">#génie</span>
-                    </div>
-
-                    <div class="comments text-muted">
-                        Voir tous les 120 commentaires
-                    </div>
-                </div>
-
-                <!-- ------------ post 3 --------------- -->
-                <div class="post">
-                    <div class="head">
-                        <div class="user">
-                            <div class="profile-photo">
-                                <img src="./images/profile-16.jpg" alt="">
-                            </div>
-                            <div class="autor">
-                                <h3>Tom Michel - Informatique</h3>
-                                <!-- <h5>Application de gestion des tontines</h5> -->
-                                <small>Yaoundé, 15 MINUTES AGO</small>
+                            <div class="favorite">
+                                    <!-- <i class="uil uil-favorite"></i> -->
+                                <span class="btn-favoris" id="fav{{post.id}}">
+                                    <i class="bi bi-star"></i>
+                                    <i class="bi bi-star-fill"></i>
+                                </span>
+                                &emsp;
+                                <!-- <i class="uil uil-comments-alt"></i> -->
+                                {% if request.user.investisseur.id %}
+                                    <a id="btn-disc" href="{% url 'createRoom' request.user.investisseur.id post.etudiant.id post.title %}"><i class="bi bi-messenger"></i></a>
+                                {% endif %}
+                                {% if post.etudiant.id == request.user.etudiant.id %}
+                                    <i style="color: green;" class="uil uil-money-withdraw markInvest"></i>
+                                {% endif %}
                             </div>
                         </div>
-                        <span class="edit">
-                            <i class="uil uil-ellipsis-h"></i> 
-                        </span>
-                    </div>
 
-                    <div class="photo">
-                        <img src="./images/feed-3.jpg" alt="">
-                    </div>
-
-                    <div class="action-buttons">
-                        <div class="interaction-buttons">
-                            <span><i class="uil uil-heart"></i></span>
-                            <span><i class="uil uil-comment-dots"></i></span>
-                            <span><i class="uil uil-share-alt"></i></span>
+                        <!-- <div class="liked-by">
+                            <span><img src="{% static 'img/default.jpeg' %}"></span>
+                            <span><img src="{% static 'img/default.jpeg' %}"></span>
+                            <span><img src="{% static 'img/default.jpeg' %}"></span>
+                            <p>Aimé par <b>Tom Michel</b> et <b>321 autres</b></p>
                         </div>
-                        <div class="favorite">
-                            <span><i class="uil uil-favorite"></i></span>
-                        </div>
-                    </div>
 
-                    <div class="liked-by">
-                        <span><img src="./images/profile-15.jpg" alt=""></span>
-                        <span><img src="./images/profile-16.jpg" alt=""></span>
-                        <span><img src="./images/profile-18.jpg" alt=""></span>
-                        <p>Aimé par <b>Tom Michel</b> et <b>321 autres</b></p>
-                    </div>
+                        <div class="caption">
+                            <b>Tom Michel</b> Lorem ipsum dolor sit amet consectetur, adipisicing elit. <span class="hash-tag">#génie</span>
+                        </div> -->
 
-                    <div class="caption">
-                        <b>Tom Michel</b> Lorem ipsum dolor sit amet consectetur, adipisicing elit. <span class="hash-tag">#génie</span>
-                    </div>
+                        <!-- ------------------- partie commentaires ---------------------- -->
 
-                    <div class="comments text-muted">
-                        Voir tous les 120 commentaires
-                    </div>
-                </div>
+                        <div class="comments mt-1">
+                            <span class="text-muted toggle-comments">Voir/Cacher tous les commentaires</span>
+                            <div class="list-comments mt-3">
+                                <div class="chat pt-4" id="comments{{post.id}}">
 
-                <!-- ------------ post 4 --------------- -->
-                <div class="post">
-                    <div class="head">
-                        <div class="user">
-                            <div class="profile-photo">
-                                <img src="./images/profile-17.jpg" alt="">
+                                    <!-- comentaire 1 -->
+                                    <div class=".disc-left d-flex align-items-start text-start justify-content-start">
+                                        <div>
+                                            <div class="avatar">
+                                                <img src="{% static 'img/default.jpeg' %}">
+                                            </div>
+                                        </div>
+                                        <div class="left-messages">
+                                            <span class="card card-text-left d-inline-block py-1 px-3 ms-1">
+                                                Let me know when you're available?
+                                            </span>
+                                            <br>
+                                            <div class="ms-2 my-1">
+                                                <span class="text-muted">
+                                                    <span class="btn-reply-comment">Répondre</span>&emsp;
+                                                    01:13PM
+                                                </span>
+                                            </div>
+                                            <br>
+                                        </div>
+                                    </div>
+
+                                    {% comment %} <!-- votre commentaire 1 -->
+                                    <div class=".disc-right d-flex align-items-baseline text-end justify-content-end">
+                                        <div class="right-messages">
+                                            <span class="card card-text-right d-inline-block text-start py-1 px-3 me-1">
+                                                Let me know when you're available?
+                                            </span>
+                                            <br>
+                                            <div class="me-2">
+                                                <span class="text-muted">01:13PM</span>
+                                            </div>
+                                            <br>
+                                        </div>
+                                    </div>
+
+                                    <!-- --------------- commentaire 2 --------------- -->
+                                    <div class=".disc-left d-flex align-items-start text-start justify-content-start">
+                                        <div>
+                                            <div class="avatar">
+                                                <img src="{% static 'img/default.jpeg' %}">
+                                            </div>
+                                        </div>
+                                        <div class="left-messages">
+                                            <span class="card card-text-left d-inline-block py-1 px-3 ms-1">
+                                                Let me know when you're available?
+                                            </span>
+                                            <br>
+                                            <div class="ms-2 my-1">
+                                                <span class="text-muted">
+                                                    <span class="btn-reply-comment">Répondre</span>&emsp;
+                                                    01:13PM
+                                                </span>
+                                            </div>
+                                            <!-- --------- input réponse commentaire 2 ------- -->
+                                            <div class="reply-comment">
+                                                <form action="" method="post">
+                                                    {% csrf_token %}
+                                                    <input type="text" name="" id="" placeholder="Votre réponse">
+                                                    <div class="send">
+                                                        <input type="submit" id="reply-message" value="Envoer" hidden>
+                                                        <label for="reply-message"><i class="uil uil-message"></i></label>
+                                                    </div>
+                            
+                                                </form>
+                                            </div>
+                                            <br>
+
+                                            <!-- ---------------- reponse commentaire 2 ---------------- -->
+                                            <div class=".disc-left d-flex align-items-start text-start justify-content-start">
+                                                <div>
+                                                    <div class="avatar">
+                                                        <img src="{% static 'img/default.jpeg' %}">
+                                                    </div>
+                                                </div>
+                                                <div class="left-messages">
+                                                    <span class="card card-text-left d-inline-block py-1 px-3 ms-1">
+                                                        Let me know when you're available?
+                                                    </span>
+                                                    <br>
+                                                    <div class="ms-2 my-1">
+                                                        <span class="text-muted">
+                                                            <span class="btn-reply-comment">Répondre</span>&emsp;
+                                                            01:13PM
+                                                        </span>
+                                                    </div>
+                                                    <!-- --------- input réponse à la réponse commentaire 2 ------- -->
+                                                    <div class="reply-comment">
+                                                        <form action="" method="post">
+                                                            {% csrf_token %}
+                                                            <input type="text" name="" id="" placeholder="Votre réponse">
+                                                            <div class="send">
+                                                                <input type="submit" id="reply-message" value="Envoer" hidden>
+                                                                <label for="reply-message"><i class="uil uil-message"></i></label>
+                                                            </div>
+                                    
+                                                        </form>
+                                                    </div>
+                                                    <br>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- votre commentaire 1 -->
+                                    <div class=".disc-right d-flex align-items-baseline text-end justify-content-end">
+                                        <div class="right-messages">
+                                            <span class="card card-text-right d-inline-block text-start py-1 px-3 me-1">
+                                                Let me know when you're available?
+                                            </span>
+                                            <br>
+                                            <div class="me-2">
+                                                <span class="text-muted">01:13PM</span>
+                                            </div>
+                                            <br>
+                                        </div>
+                                    </div> {% endcomment %}
+                                </div>
                             </div>
-                            <div class="autor">
-                                <h3>Tom Michel - Informatique</h3>
-                                <!-- <h5>Application de gestion des tontines</h5> -->
-                                <small>Yaoundé, 15 MINUTES AGO</small>
+                            <div class="send-comment">
+                                <form class="comment_form">
+                                    {% csrf_token %}
+                                    <input type="text" name="projet" id="projet" value="{{post.id}}" hidden>
+                                    <input type="text" name="auteur" id="auteur" value="{{request.user.id}}" hidden>
+                                    <input type="text" name="corps" id="corps" placeholder="Votre commentaire">
+                                    <div class="send">
+                                        <input type="submit" id="send-message" value="Envoer" hidden>
+                                        <label class="btn_sub" for="send-message"><i class="uil uil-message"></i></label>
+                                    </div>
+            
+                                </form>
                             </div>
                         </div>
-                        <span class="edit">
-                            <i class="uil uil-ellipsis-h"></i> 
-                        </span>
                     </div>
-
-                    <div class="photo">
-                        <img src="./images/feed-4.jpg" alt="">
-                    </div>
-
-                    <div class="action-buttons">
-                        <div class="interaction-buttons">
-                            <span><i class="uil uil-heart"></i></span>
-                            <span><i class="uil uil-comment-dots"></i></span>
-                            <span><i class="uil uil-share-alt"></i></span>
-                        </div>
-                        <div class="favorite">
-                            <span><i class="uil uil-favorite"></i></span>
-                        </div>
-                    </div>
-
-                    <div class="liked-by">
-                        <span><img src="./images/profile-15.jpg" alt=""></span>
-                        <span><img src="./images/profile-16.jpg" alt=""></span>
-                        <span><img src="./images/profile-18.jpg" alt=""></span>
-                        <p>Aimé par <b>Tom Michel</b> et <b>321 autres</b></p>
-                    </div>
-
-                    <div class="caption">
-                        <b>Tom Michel</b> Lorem ipsum dolor sit amet consectetur, adipisicing elit. <span class="hash-tag">#génie</span>
-                    </div>
-
-                    <div class="comments text-muted">
-                        Voir tous les 120 commentaires
-                    </div>
-                </div>
-
-                <!-- ------------ post 5 --------------- -->
-                <div class="post">
-                    <div class="head">
-                        <div class="user">
-                            <div class="profile-photo">
-                                <img src="./images/profile-19.jpg" alt="">
-                            </div>
-                            <div class="autor">
-                                <h3>Tom Michel - Informatique</h3>
-                                <!-- <h5>Application de gestion des tontines</h5> -->
-                                <small>Yaoundé, 15 MINUTES AGO</small>
-                            </div>
-                        </div>
-                        <span class="edit">
-                            <i class="uil uil-ellipsis-h"></i> 
-                        </span>
-                    </div>
-
-                    <div class="photo">
-                        <img src="./images/feed-5.jpg" alt="">
-                    </div>
-
-                    <div class="action-buttons">
-                        <div class="interaction-buttons">
-                            <span><i class="uil uil-heart"></i></span>
-                            <span><i class="uil uil-comment-dots"></i></span>
-                            <span><i class="uil uil-share-alt"></i></span>
-                        </div>
-                        <div class="favorite">
-                            <span><i class="uil uil-favorite"></i></span>
-                        </div>
-                    </div>
-
-                    <div class="liked-by">
-                        <span><img src="./images/profile-15.jpg" alt=""></span>
-                        <span><img src="./images/profile-16.jpg" alt=""></span>
-                        <span><img src="./images/profile-18.jpg" alt=""></span>
-                        <p>Aimé par <b>Tom Michel</b> et <b>321 autres</b></p>
-                    </div>
-
-                    <div class="caption">
-                        <b>Tom Michel</b> Lorem ipsum dolor sit amet consectetur, adipisicing elit. <span class="hash-tag">#génie</span>
-                    </div>
-
-                    <div class="comments text-muted">
-                        Voir tous les 120 commentaires
-                    </div>
-                </div>
+                {% endfor %}
             </div>
             <!-- ------------ end posts --------------- -->
         </div>
@@ -480,109 +478,267 @@
                    <h6>Plus Aimés</h6>
                    <h6 class="invest-projects">Investis(6)</h6>
                 </div>
-                <!-- ----------- projects lines ------------ -->
-                <div class="project-line">
-                    <!-- <div class="profile-photo">
-                        <img src="./images/profile-9.jpg" alt="">
-                    </div> -->
-                    <div class="project-body">
-                        <h5>Informatique</h5>
-                        <p class="text-muted">10 projets publiés</p>
-                    </div>
-                    <span class="">
-                        <i class="uil uil-direction"></i>
-                        <!-- <i class="uil uil-arrow-circle-down"></i> -->
-                    </span>
-                </div>
 
-                <!-- ----------- projects lines ------------ -->
-                <div class="project-line">
-                    <div class="project-body">
-                        <h5>Santé</h5>
-                        <p class="text-muted">10 projets publiés</p>
-                    </div>
-                    <span class="">
-                        <i class="uil uil-direction"></i>
-                    </span>
+                <div class="accordion accordion-flush" id="cat1">
+                    {% for post in postListUnique %}
+                        <div class="accordion-item mb-4" id="accordion-cat" style="border: none;">
+                            <div class="project-line" style="cursor: pointer;">
+                                <div class="project-body collapsed" data-bs-toggle="collapse" data-bs-target="#cat{{post.categorie.id}}" aria-expanded="false">
+                                    <h5>{{post.categorie}}</h5>
+                                    <p class="text-muted">nombre projets publiés</p>
+                                </div>
+                                <span class="">
+                                    <i class="uil uil-direction"></i>
+                                </span>
+                            </div>
+                            
+                            {% for p in postList %}
+                                {% if p.categorie == post.categorie %}
+                                    <div id="cat{{post.categorie.id}}" class="accordion-collapse collapse my-2" aria-labelledby="flush-head{{post.categorie.id}}" data-bs-parent="#cat2">
+                                        <!-- <p></p> -->
+                                        <a href="#projet{{p.id}}">{{p.title}}</a>
+                                    </div>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                    {% endfor %}
                 </div>
-
-                <!-- ----------- projects lines ------------ -->
-                <div class="project-line">
-                    <div class="project-body">
-                        <h5>Immobilier</h5>
-                        <p class="text-muted">10 projets publiés</p>
-                    </div>
-                    <span class="">
-                        <i class="uil uil-direction"></i>
-                    </span>
-                </div>
-
-                <!-- ----------- projects lines ------------ -->
-                <div class="project-line">
-                    <div class="project-body">
-                        <h5>Informatique</h5>
-                        <p class="text-muted">10 projets publiés</p>
-                    </div>
-                    <span class="">
-                        <i class="uil uil-direction"></i>
-                    </span>
-                </div>
+                
             </div>
             <div>
                 <!-- ----------- Discussions ------------ -->
                 <div class="discussions">
                     <h4>Discussions</h4>
-                    <div class="discussion">
+                    <div class="discussion" style="cursor: pointer;" data-bs-toggle="modal" data-bs-target="#discussionModal">
                         <div class="info">
-                            <div class="profile-photo">
-                                <img src="./images/profile-14.jpg" alt="">
-                            </div>
                             <div>
                                 <span>
-                                    <h5>Nom Investisseur (2)</h5>
+                                    <h5><i class="uil uil-envelope"></i> Mes discussions</h5>
                                 </span>
+                                <p></p>
                                 <p class="text-muted">
-                                    Application de recherche d'investissement
+                                    Ci-dessous la liste de vos discussions
                                 </p>
                             </div>
                         </div>
                     </div>
-                    <div class="discussion">
-                        <div class="info">
-                            <div class="profile-photo">
-                                <img src="./images/profile-17.jpg" alt="">
+                    {% for room in roomList %}
+                        {% if room.inv.user.username == request.user.username %}
+                            <div class="discussion">
+                                <div class="info">
+                                    <div class="profile-photo">
+                                    {% for u in userList %}
+                                        {% if u.username == room.etu.user.username %}
+                                        <img src="{{u.etudiant.photoProfil.url}}" alt="">
+                                        {% endif %}
+                                    {% endfor %}
+                                    </div>
+                                    <a href="/{{room.name}}/?username={{request.user.username}}">
+                                        <div>
+                                            <span>
+                                                <h5>{{room.etu.user.last_name}}</h5>
+                                            </span>
+                                            <p class="text-muted mb-0">
+                                                {{room.name|truncatechars:30}}
+                                            </p>
+                                        </div>
+                                    </a>
+                                </div>
                             </div>
-                            <div>
-                                <span>
-                                    <h5>Nom Investisseur (1)</h5>
-                                </span>
-                                <p class="text-muted">
-                                    Application de recherche de répétiteur
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="discussion">
-                        <div class="info">
-                            <div class="profile-photo">
-                                <img src="./images/profile-19.jpg" alt="">
-                            </div>
-                            <div>
-                                <span>
-                                    <h5>Nom Investisseur (2)</h5>
-                                </span>
-                                <p class="text-muted">
-                                    Application de gestion des tontines
-                                </p>
-                            </div>
-                        </div>
-                    </div>
+                        {% else %}
+                            {% if room.etu.user.username == request.user.username %}
+                                <div class="discussion">
+                                    <div class="info">
+                                        <div class="profile-photo">
+                                        {% for u in userList %}
+                                            {% if u.username == room.inv.user.username %}
+                                            <img src="{{u.investisseur.photoProfil.url}}" alt="">
+                                            {% endif %}
+                                        {% endfor %}
+                                        </div>
+                                        <a href="/{{room.name}}/?username={{request.user.username}}">
+                                            <div>
+                                                <span>
+                                                    <h5>{{room.inv.user.last_name}}</h5>
+                                                </span>
+                                                <p class="text-muted mb-0">
+                                                    {{room.name|truncatechars:30}}
+                                                </p>
+                                            </div>
+                                        </a>
+                                    </div>
+                                </div>
+                            {% endif %}
+                        {% endif %}
+                    {% endfor %}
                 </div>
            </div>
         </div>
         <!-- ============== END OF RIGTH =============== -->
     </div>
 </main>
+
+<!-- ================ DISCUSSIONS MODAL ====================== -->
+  
+  <!-- CREATE POST Modal -->
+<div class="modal fade" id="createPostModal" tabindex="-1" aria-labelledby="createPostLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="createPostLabel">Publier/Modifier un projet</h5>
+          <i id="fermerMod" class="uil uil-multiply"  data-bs-dismiss="modal" aria-label="Close"></i>
+        </div>
+        <div class="modal-body">
+            <style>
+                textarea{
+                    width: 100%;
+                    height: 100px;
+                }
+            </style>
+            {% comment %} <form id="create_form" action="" method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                {{create_post_form}}
+
+                <input type="text" name="form_type" value="create_form">
+                <input class="btn btn-primary" type="submit" value="Publier">
+    
+                {{err_create_post}}
+            </form> {% endcomment %}
+
+            <form id="create_form" method="post" enctype="multipart/form-data">
+                {% csrf_token %} 
+                    {% comment %} <input type="hidden" name="csrfmiddlewaretoken" value="Sx3lUMs8LW5HZFZ7kqhl2PlAFiEYcmqy11dxbx7vWPlFwmb1aKtMFNQx0Suq1Pg6"> {% endcomment %}
+                    
+                    <input type="text" name="title" maxlength="200" required="" id="id_title" placeholder="Titre du Projet"><p></p>
+                    {% comment %} <input type="text" name="categorie" maxlength="200" required="" id="id_categorie" placeholder="Categorie projet"> {% endcomment %}
+                    <p style="display: flex; align-items: center; gap: 1rem;">
+                        <label for="id_categorie">Catégorie</label>
+                        {{create_post_form.categorie}}
+                    </p><p></p>
+
+                    <select name="investi" id="id_investi" hidden>
+                        <option value="">---------</option>
+
+                        <option value="Oui">Oui</option>
+
+                        <option value="Non" selected="">Non</option>
+
+                    </select>
+
+                    <textarea name="description" cols="40" rows="10" maxlength="500" required="" id="id_description" placeholder="Description"></textarea><p></p>
+
+                    <select name="etudiant" required="" id="id_etudiant" hidden>
+                        <option value="{{request.user.etudiant.id}}">{{request.user.etudiant}}</option>
+                    </select>
+
+                    <center>
+                        <label id="image_post" for="id_image">
+                            <span>Insérez une image</span>
+                            <i class="uil uil-image-plus"></i>
+                            <img id="upload_image" src="" alt="">
+                        </label>
+                    </center>
+                    <input type="file" name="image" accept="image/*" id="id_image" hidden><p></p>
+                    <hr>
+                    <center>
+                        <p class="mt-2 mb-0 text-small">Ajoutez un fichier qui décrire de manière plus détaillée votre projet</p>
+                        <label id="media_post" for="id_media">
+                            <i class="uil uil-file-plus"></i>
+                            <span class="text-muted text-small" id="upload_file"></span>
+                        </label>
+                    </center>
+                    <input type="file" name="media" id="id_media" hidden><p></p>
+
+
+                    <input type="text" id="form_type" name="form_type" value="create_form" hidden><p></p>
+                    <center><input class="mt-4 btn btn-primary" type="submit" value="Publier"></center>
+                    {{err_create_post}}
+            </form>
+        </div>
+      </div>
+    </div>
+</div>
+
+
+  <!-- MODIFY POST Modal -->
+<div class="modal fade" id="modifyPostModal" tabindex="-1" aria-labelledby="createPostLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="createPostLabel">Supprimer un projet</h5>
+          <i class="uil uil-multiply"  data-bs-dismiss="modal" aria-label="Close"></i>
+        </div>
+        <div class="modal-body">
+            ----
+        </div>
+      </div>
+    </div>
+</div>
+
+  <!-- Modal discussions -->
+<div class="modal fade" id="discussionModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Discussions</h5>
+                <i class="uil uil-multiply"  data-bs-dismiss="modal" aria-label="Close"></i>
+            </div>
+            <div class="modal-body">
+                {% for room in roomList %}
+                {% if room.inv.user.username == request.user.username or room.etu.user.username == request.user.username %}
+                    <div class="discussionMod">
+                        {% if room.inv.user.username == request.user.username %}
+                            <div class="info">
+                                <div class="profile-photo">
+                                    {% for u in userList %}
+                                        {% if u.username == room.etu.user.username %}
+                                        <img src="{{u.etudiant.photoProfil.url}}" alt="">
+                                        {% endif %}
+                                    {% endfor %}
+                                </div>
+                                <a href="/{{room.name}}/?username={{request.user.username}}">
+                                    <div>
+                                        <span>
+                                            <h5>{{room.etu.user.last_name}}</h5>
+                                        </span>
+                                        <p class="text-muted mb-0">
+                                            {{room.name|truncatechars:30}}
+                                        </p>
+                                    </div>
+                                </a>
+                            </div>
+                        {% else %}
+                            {% if room.etu.user.username == request.user.username %}
+                            <div class="info">
+                                <div class="profile-photo">
+                                    {% for u in userList %}
+                                        {% if u.username == room.inv.user.username %}
+                                            <img src="{{u.investisseur.photoProfil.url}}" alt="">
+                                        {% endif %}
+                                    {% endfor %}
+                                </div>
+                                <a href="/{{room.name}}/?username={{request.user.username}}">
+                                    <div>
+                                        <span>
+                                        <h5>{{room.inv.user.last_name}}</h5>
+                                        </span>
+                                        <p class="text-muted mb-0">
+                                            {{room.name|truncatechars:30}}
+                                        </p>
+                                    </div>
+                                </a>
+                            </div>
+                            {% endif %}
+                        {% endif %}
+                    </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ================ END DISCUSSIONS MODAL ====================== -->
 
 <!-- ==================== THEME CUSTOMIZATION ======================= -->
 <div class="customize-theme">
@@ -637,6 +793,347 @@
         </div>
     </div>
 </div>
+
+
+<!-- ============================ SCRIPTs ================================ -->
+
+<!-- supprimer un projet -->
+<script>
+    function delete_post() {
+        res = confirm("Voulez-vous supprimmer cette publications ? ");
+        if(res){
+            return true;
+        }else{
+            return false;
+        }
+    }
+</script>
+
+<!-- charger les ficheirs du formulaire de création d'un post -->
+<script>
+    // charger l'image
+
+	let choosenImage = document.getElementById('upload_image');
+	let uploardButton = document.getElementById('image_post');
+    let postImage = document.getElementById('id_image');
+
+	let ListExt = ["jpeg", "jpg", "png", "tif", "gif",
+				   "JPEG", "JPG", "PNG", "TIF", "GIF"];
+	postImage.onchange = () =>{
+		let fileName = postImage.files[0].name.split(".");
+		let ext = fileName[fileName.length-1];
+		if(ListExt.indexOf(ext) === -1){
+			alert("Veuillez sélectionner une image png, jpeg, jpg, tif ou gif");
+		}else{
+			let reader = new FileReader();
+			reader.readAsDataURL(postImage.files[0]);
+			let file = postImage.files[0];
+			reader.onload = () => {
+				choosenImage.setAttribute("src", reader.result);
+
+			}
+		}
+	}
+
+    // charger le nom de ficher
+
+    nomFile = document.getElementById('upload_file');
+    postFile = document.getElementById('id_media');
+
+    postFile.onchange = () =>{
+		let fileName = postFile.files[0].name;
+		nomFile.innerHTML = fileName;
+	}
+</script>
+
+<!-- poster sans recharger la page -->
+<script>
+    $(document).on('submit','#create_form',function(e){
+        // e.preventDefault();
+  
+        // $.ajax({
+
+        //     type: "POST",
+        //     url: "{% url 'accueil' %}",
+        //     data: $('#create_form').serialize(),
+        //     dataType: "json",
+
+        //     success:function(data){
+        //         create_form.reset()
+        //     },
+        //     error: function(data){
+        //         // alert('An error occured')
+        //     }
+        // });
+        alert(data);
+        document.getElementById('fermerMod').click();
+    });
+</script>
+
+
+<!-- actualiser la page chaque 1 secondes -->
+
+<!-- <script>
+    $(document).ready(function(){
+
+        setInterval(function(){
+            $.ajax({
+                // type: 'POST',
+                url : "{% url 'accueil' %}",
+                success: function(response){
+                    
+                },
+                error: function(response){
+                    alert('An error occured')
+                }
+            });
+        },1000);
+    })
+</script> -->
+
+
+<!-- commenter un projet, mettre en favoris un projet -->
+
+<script>
+    listcomForms = document.querySelectorAll('.comment_form');
+    comForms = document.querySelectorAll('.btn_sub');
+    corps = document.querySelectorAll('#corps');
+    projets = document.querySelectorAll('#projet');
+    auteurs = document.querySelectorAll('#auteur');
+
+    // envoyer le commentaire
+    
+    // click sur le bouton envoyer
+    for (let i = 0; i < comForms.length; i++) {
+        comForms[i].addEventListener("click", function(e){
+            e.preventDefault();
+            // alert(projets[i].value);
+            $.ajax({
+                type:'POST',
+                url:'CommentPost',
+                data:{
+                    projet:projets[i].value,
+                    auteur:auteurs[i].value,
+                    corps:corps[i].value,
+                    csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val(),
+                },
+                success: function(data){
+                    // alert(data);
+                    corps[i].value = '';
+                },
+                error: function(response){
+                    alert('An error occured')
+                }
+            });
+        });
+    }
+
+    // click sur le bouton Enter
+    for (let i = 0; i < comForms.length; i++) {
+        listcomForms[i].addEventListener("submit", function(e){
+            e.preventDefault();
+            // alert(projets[i].value);
+            $.ajax({
+                type:'POST',
+                url:'CommentPost',
+                data:{
+                    projet:projets[i].value,
+                    auteur:auteurs[i].value,
+                    corps:corps[i].value,
+                    csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val(),
+                },
+                success: function(data){
+                    // alert(data);
+                    corps[i].value = '';
+                },
+                error: function(response){
+                    alert('An error occured')
+                }
+            });
+        });
+    }
+
+    // raffraichir la liste des commentaires
+
+    listComments = document.querySelectorAll('.chat');
+
+    $(document).ready(function(){
+
+        setInterval(function(){
+            $.ajax({
+                type: 'GET',
+                url : "{% url 'getComments' %}",
+                success: function(response){
+                    for (let i = 0; i < listComments.length; i++) {
+                        $("#comments"+projets[i].value).empty();
+                        for (var key in response.comments){
+                            if(projets[i].value == response.comments[key].id_projet){
+                                // si utilisateur connecté
+                                if(response.comments[key].auteur == "{{request.user.username}}"){
+                                    temp = "<div class='.disc-right d-flex align-items-baseline text-end justify-content-end'>"
+                                            +"<div class='right-messages'><span class='card card-text-right d-inline-block text-start py-1 px-3 me-1'>"
+                                            +response.comments[key].corps
+                                            +"</span><br><div class='me-2'><span class='text-muted'>"+response.comments[key].date_added+"</span>"
+                                            +"</div><br></div></div>";
+                                }else{
+                                    temp1 = "<div class='.disc-left d-flex align-items-start text-start justify-content-start'>";
+                                    "{% for usr in userList %}"
+                                        if ("{{usr.username}}" == response.comments[key].auteur) {
+                                            "{% if usr.etudiant.id %}"
+                                                temp2 = "<div><div class='avatar'><img src='{{usr.etudiant.photoProfil.url}}'></div></div>"
+                                            "{% else %}"
+                                                temp2 = "<div><div class='avatar'><img src='{{usr.investisseur.photoProfil.url}}'></div></div>"
+                                            "{% endif %}"
+                                        }
+                                    "{% endfor %}"
+                                    temp3 = "<div class='left-messages'><span class='card card-text-left d-inline-block py-1 px-3 ms-1'>"
+                                            +response.comments[key].corps
+                                            +"</span><br><div class='ms-2 my-1'><span class='text-muted'>"
+                                            +"<span class='btn-reply-comment'>Répondre</span>&emsp;"+response.comments[key].date_added+"</span></div><br>"
+                                            +"</div></div>";
+                                    temp = temp1+temp2+temp3;
+                                }
+                                $("#comments"+projets[i].value).append(temp);
+                            }
+                        }
+                        // refreshFav();
+                    }
+                    
+                },
+                error: function(response){
+                    alert('An error occured')
+                }
+            });
+        },2000);
+    })
+
+
+    // ajout/supprimer favoris
+
+    btnFavoris = document.querySelectorAll('.btn-favoris');
+    addFavoris = document.querySelectorAll('.bi-star');
+    removeFavoris = document.querySelectorAll('.bi-star-fill');
+
+    for (let i = 0; i < btnFavoris.length; i++) {
+        btnFavoris[i].addEventListener("click", function(e){
+            // alert(projets[i].value);
+            e.preventDefault();
+            $.ajax({
+                type:'POST',
+                url:'createFavoris',
+                data:{
+                    projet:projets[i].value,
+                    auteur:auteurs[i].value,
+                    csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val(),
+                },
+                success: function(data){
+                    // alert(data);
+                },
+                error: function(response){
+                    alert('An error occured')
+                }
+            });
+        });
+        
+    }
+
+    // raffraichir liste des favoris
+
+    $(document).ready(function(){
+        setInterval(function(){
+            $.ajax({
+                type: 'GET',
+                url : "{% url 'getFavoris' %}",
+                success: function(response){
+                    for (let i = 0; i < listComments.length; i++) {
+                        $("#fav"+projets[i].value).empty();
+                        if(response.favoriss.length == 0){
+                            temp = "<i class='bi bi-star'></i>";
+                            $("#fav"+projets[i].value).append(temp);
+                        }else{
+                            for (var key in response.favoriss){
+                                if(response.favoriss[key].id_proj == projets[i].value 
+                                    && response.favoriss[key].id_usr == "{{request.user.id}}"){
+                                    temp = "<i class='bi bi-star-fill'></i>";
+                                }else{
+                                    temp = "<i class='bi bi-star'></i>";
+                                }
+                                $("#fav"+projets[i].value).append(temp);
+                                
+                            }
+                        }
+                    }
+                },
+                error: function(response){
+                    alert('An error occured')
+                }
+            });
+        },1000);
+    })
+
+
+    // marquer un projet investi
+
+    markInvests = document.querySelectorAll('.markInvest');
+    for (let i = 0; i < markInvests.length; i++) {
+        markInvests[i].addEventListener("click", function(e){
+            e.preventDefault();
+            $.ajax({
+                type:'POST',
+                url:'markPost',
+                data:{
+                    projet:projets[i].value,
+                    csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val(),
+                },
+                success: function(data){
+                    alert(data);
+                },
+                error: function(response){
+                    alert('An error occured')
+                }
+            });
+        });
+    }
+
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- <script type="text/javascript">
+    $(document).on('submit','#create_form',function(e){
+        e.preventDefault();
+  
+        $.ajax({
+            type:'POST',
+            url:"{% url 'accueil' %}",
+            data:{
+                id_title:$('#id_title').val(),
+                id_categorie:$('#id_categorie').val(),
+                id_investi:$('#id_investi').val(),
+                id_description:$('#id_description').val(),
+                id_etudiant:$('#id_etudiant').val(),
+                id_image:$('#id_image').val(),
+                id_media:$('#id_media').val(),
+                form_type:$('#form_type').val(),
+                csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val(),
+            },
+            success: function(data){
+                // alert(data)
+            }
+        });
+        document.getElementById('fermerMod').click();
+    });
+</script> -->
 
 
 {% endblock %}

@@ -1,0 +1,306 @@
+{% extends 'base-accueil.html' %}
+{% load static %}
+
+{% block title %} FindIvest | Liste des favoris favoris {% endblock %}
+
+{% block content %}
+
+
+<!-- ============== NAV ================= -->
+<nav>
+  <div class="container">
+      <a href="#create-post">
+          <h2 class="log">
+              <span style="opacity: 0; visibility: hidden;">FindInvest</span>
+              <img src="{% static 'img/logo1.png' %}">
+          </h2>
+      </a>
+      
+      <div class="search-bar" id="search-bar-id">
+          <!-- <i class="fa-solid fa-magnifying-glass"></i> -->
+          <i class="uil uil-search"></i>
+          <input class="search-bar-input" type="search" name="" id="search-bar-input" placeholder="Rechercher...">
+      </div>
+
+      <div class="create dropdown">
+          {% if request.user.etudiant.id %}
+              <div class="profile-photo" style="cursor: pointer;" data-bs-toggle="dropdown" aria-expanded="false">
+                  <img src="{{request.user.etudiant.photoProfil.url}}">
+              </div>
+          {% else %}
+              <div class="profile-photo" style="cursor: pointer;" data-bs-toggle="dropdown" aria-expanded="false">
+                  <img src="{{request.user.investisseur.photoProfil.url}}">
+              </div>
+          {% endif %}
+          <ul class="dropdown-menu">
+              <li>
+                {% if request.user.etudiant.id %}
+                    <a class="dropdown-item" href="{% url 'profile_student' request.user.etudiant.id %}">
+                {% else %}
+                    <a class="dropdown-item" href="{% url 'profile_investor' request.user.investisseur.id %}">
+                {% endif %}
+                  <i class="uil uil-user"></i> Profil</a>
+              </li>
+              <li><a class="dropdown-item" href="{% url 'user_logout' %}">
+                  <i class="uil uil-sign-out-alt"></i> Logout
+              </a></li>
+          </ul>
+      </div>
+  </div>
+</nav>
+
+<!-- ============== MAIN ================= -->
+<main>
+  <div class="container">
+      <!-- ============== LEFT =============== -->
+      <div class="left">
+          <a class="profile">
+            {% if usr.etudiant.id %}
+                <div class="profile-photo" style="cursor: pointer;">
+                    <img src="{{usr.etudiant.photoProfil.url}}">
+                </div>
+            {% else %}
+                <div class="profile-photo" style="cursor: pointer;">
+                    <img src="{{usr.investisseur.photoProfil.url}}">
+                </div>
+            {% endif %}
+              <div class="handle">
+                  <h4>{{usr.last_name}}</h4>
+              </div>
+          </a>
+
+          <!-- ---------- sidebar ---------- -->
+          <div class="sidebar">
+                <a href="{% url 'accueil' %}" class="menu-item">
+                    <span><i class="uil uil-home"></i></span><h3>Accueil</h3>
+                </a>
+                <a href="{% url 'favoris' usr.id %}" class="menu-item active">
+                    <span><i class="uil uil-folder-heart"></i></span><h3>Favoris</h3>
+                </a>
+           
+                {% if usr.etudiant.id %}
+                    <a class="menu-item" href="{% url 'profile_student' usr.etudiant.id %}">
+                {% else %}
+                    <a class="menu-item" href="{% url 'profile_investor' usr.investisseur.id %}">
+                {% endif %}
+                    <span><i class="uil uil-user"></i></span><h3>Profil</h3>
+                </a> 
+                {% if usr.etudiant.id %}
+                <a href="{% url 'mes_projets' usr.etudiant.id %}" class="menu-item">
+                    <span><i class="uil uil-folder"></i></span><h3>Projets</h3>
+                </a>
+                {% endif %}
+              <a class="menu-item" id="theme">
+                  <span><i class="uil uil-palette"></i></span><h3>Thème</h3>
+              </a>
+          </div>
+
+          <!-- ------------ end of sidebar --------- -->
+      </div>
+      <!-- ============== END OF LEFT =============== -->
+
+
+      <!-- ============== MIDDLE =============== -->
+
+      <!-- =======DEBUT DU STYLE DU MIDDLE ========-->
+      <style>
+        .card{
+          border-radius: 20px;
+          opacity: 100%;
+          margin: 5px;
+        }
+        .card::before{
+          opacity: 12%;
+        }
+
+        .card-body .img-profil{
+          border-radius: 50%;
+          height: 135px;
+          width: 135px;
+          margin-left: 10px;
+        }
+
+        .card-body .card-title{
+          max-width: 160px;
+          display: block;
+          font-size: 1.1rem;
+        }
+        .card-body .domain{
+            margin-left: 16rem;
+            text-align: center;
+            position: absolute;
+            margin-top: 1.5rem;
+            font-size: 1.8rem;
+        }
+        .card-body .titre-projet{
+            margin-left: 14rem;
+            display: block;
+            position: absolute;
+            margin-top: 3.9rem;
+        }
+        .img-projet{
+            display:inline-flex;
+        }
+        .img-projet img{
+            width: 150px;
+            height: 140px;
+            background-color: #D9D9D9;
+            margin: 5px;
+        }
+      </style>
+      <!-- ======= FIN DU STYLE DU MIDDLE ========-->
+
+
+      <!-- ======= DEBUT DU Script ========-->
+        <script lang="french">
+          
+        </script>
+      <!-- ======= FIN DU Script ========-->
+      <div class="middle">
+
+         <!-- --------- début recherche ------------ -->
+        
+          <div class="searchNav" id="searchNavId">
+            <div class="result">
+                <div class="search-bar my-2">
+                    <input class="search-bar-input" type="search" name="" id="search-bar-input-2" placeholder="Rechercher...">
+                </div>
+                {% for post in postList %}
+                    <div class="to-search-project">
+                        <a href="{% url 'accueil' %}#projet{{post.id}}">
+                            <div class="profile-photo">
+                                <img src="{{post.etudiant.photoProfil.url}}">
+                            </div>
+                            <span>
+                                <h3>{{post.etudiant.user.last_name}} - {{post.categorie}}</h3>
+                                <h5>{{post.title}}</h5>
+                            </span>
+                        </a>
+                    </div>
+                {% endfor %}
+            </div>
+          </div>
+      <!-- -------------- fin recherche ------------ -->
+          
+        <div class="create-post text-center" style="display: block !important; font-weight: 600;">
+            {% if listProjet %}
+                {{nbFav}} Projet(s) en favoris 
+            {% else %}
+                0 de Projets en favoris
+            {% endif %}
+        </div>
+        <!-- ------------ posts --------------- -->
+        <div class="posts">
+            {% for post in listProjet %}
+                <!-- ------------ post --------------- -->
+                <div class="post" id="projet{{post.id}}">
+                    <div class="head">
+                        <div class="user">
+                            <a href="{% url 'profile_student' post.etudiant.id %}">
+                                <div class="profile-photo">
+                                    <img src="{{post.etudiant.photoProfil.url}}">
+                                </div>
+                            </a>
+                            <div class="autor">
+                                <a href="{% url 'accueil' %}#projet{{post.id}}">
+                                    <h3>{{post.etudiant.user.last_name}} - {{post.categorie}}</h3>
+                                    <small>{{post.etudiant.ville}}, {{post.date_post}}</small>
+                                </a>
+                            </div>
+                        </div>
+                        
+                        {% if usr.id == post.etudiant.user.id %}
+                            <div class="dropstart">
+                                <span class="edit" id="dropdownPostActions" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="uil uil-ellipsis-h"></i> 
+                                </span>
+                                <ul class="dropdown-menu" aria-labelledby="dropdownPostActions">
+                                    <li><a class="dropdown-item" href="{% url 'update_post' post.id %}"  data-bs-toggle="modal" data-bs-target="#createPostModal">Modifier</a></li>
+                                    <li><a class="dropdown-item" href="{% url 'delete_post' post.id %}" onclick="return delete_post();">Supprimer</a></li>
+                                </ul>
+                            </div>
+                        {% endif %}
+                    </div>
+                    <div class="post-description">
+                        <div class="post-title">
+                            <h5>{{post.title}}</h5>
+                        </div>
+                        <p>
+                            {{post.description}}
+                        </p>
+                        {% if post.media %}
+                            <p>
+                                <a href="{{post.media.url}}" download="FindInvest_Document">Description détaillée PDF</a>
+                            </p>
+                        {% endif %}
+                    </div>
+                    <div class="photo">
+                        <a href="{{post.image.url}}">
+                            <img src="{{post.image.url}}">
+                        </a>
+                    </div>
+
+                    
+
+                    
+                </div>
+            {% endfor %}
+        </div>
+        <!-- ------------ end posts --------------- -->
+      </div>
+      <!-- ============== END OF MIDDEL =============== -->
+
+      <!-- ============== RIGHT =============== -->
+      <div class="right">
+        <!-- -------- catégories ---------- -->
+        <div class="categories">
+            <div class="heading">
+               <h4>Tous les projets</h4>
+               <i class="uil uil-0-plus"></i>
+            </div>
+
+            <!-- ---------- search bar ------------- -->
+            <div class="search-bar">
+                <i class="uil uil-search"></i>
+                <input type="search" name="" id="category-search" placeholder="Rechercher...">
+            </div>
+            <!-- -------- project categrories --------- -->
+            <div class="category">
+               <h6 class="active">Types</h6>
+               <h6>Plus Aimés</h6>
+               <h6 class="invest-projects">Investis(6)</h6>
+            </div>
+
+            <div class="accordion accordion-flush" id="cat1">
+                {% for post in postListUnique %}
+                    <div class="accordion-item mb-4" id="accordion-cat" style="border: none;">
+                        <div class="project-line" style="cursor: pointer;">
+                            <div class="project-body collapsed" data-bs-toggle="collapse" data-bs-target="#cat{{post.categorie.id}}" aria-expanded="false">
+                                <h5>{{post.categorie}}</h5>
+                                <p class="text-muted">nombre projets publiés</p>
+                            </div>
+                            <span class="">
+                                <i class="uil uil-direction"></i>
+                            </span>
+                        </div>
+                        
+                        {% for p in postList %}
+                            {% if p.categorie == post.categorie %}
+                                <div id="cat{{post.categorie.id}}" class="accordion-collapse collapse my-2" aria-labelledby="flush-head{{post.categorie.id}}" data-bs-parent="#cat2">
+                                    <!-- <p></p> -->
+                                    <a href="{% url 'accueil' %}#projet{{p.id}}">{{p.title}}</a>
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                {% endfor %}
+            </div>
+            
+        </div>
+    </div>
+      <!-- ============== END OF RIGTH =============== -->
+  </div>
+</main>
+
+{% endblock %}
+
